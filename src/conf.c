@@ -840,25 +840,25 @@ void parse_trusted_mac_list(const char *ptr) {
 void parse_trusted_host_list(const char *ptr) {
 	char *ptrcopy = NULL;
 	char *possiblehost = NULL;
-	char *host = NULL;
+	char** tokens;
 	t_trusted_host *p = NULL;
 
 	debug(LOG_DEBUG, "Parsing string [%s] for trusted host addresses", ptr);
 
-	host = safe_malloc(18);
-
 	/* strsep modifies original, so let's make a copy */
 	ptrcopy = safe_strdup(ptr);
+	tokens = str_split(ptrcopy, ',');
 
-	while ((possiblehost = strsep(&ptrcopy, ", "))) {
-		if (sscanf(possiblehost, " %[a-f0-9.]", host) == 1) {
-			/* Copy host to the list */
-
-			debug(LOG_DEBUG, "Adding host address [%s] to trusted list", host);
+	if (tokens)
+    {
+        int i;
+        for (i = 0; *(tokens + i); i++)
+        {
+			debug(LOG_DEBUG, "Adding host address [%s] to trusted list", *(tokens + i));
 
 			if (config.trustedhostlist == NULL) {
 				config.trustedhostlist = safe_malloc(sizeof(t_trusted_host));
-				config.trustedhostlist->host = safe_strdup(host);
+				config.trustedhostlist->host = safe_strdup(*(tokens + i));
 				config.trustedhostlist->next = NULL;
 			}
 			else {
@@ -866,17 +866,63 @@ void parse_trusted_host_list(const char *ptr) {
 				for (p = config.trustedhostlist; p->next != NULL; p = p->next);
 				p->next = safe_malloc(sizeof(t_trusted_host));
 				p = p->next;
-				p->host = safe_strdup(host);
+				p->host = safe_strdup(*(tokens + i));
 				p->next = NULL;
 			}
-
-		}
-	}
+            free(*(tokens + i));
+        }
+        free(tokens);
+    }
 
 	free(ptrcopy);
+}
 
-	free(host);
+char** str_split(char* a_str, const char a_delim)
+{
+    char** result    = 0;
+    size_t count     = 0;
+    char* tmp        = a_str;
+    char* last_comma = 0;
+    char delim[2];
+    delim[0] = a_delim;
+    delim[1] = 0;
 
+    /* Count how many elements will be extracted. */
+    while (*tmp)
+    {
+        if (a_delim == *tmp)
+        {
+            count++;
+            last_comma = tmp;
+        }
+        tmp++;
+    }
+
+    /* Add space for trailing token. */
+    count += last_comma < (a_str + strlen(a_str) - 1);
+
+    /* Add space for terminating null string so caller
+       knows where the list of returned strings ends. */
+    count++;
+
+    result = malloc(sizeof(char*) * count);
+
+    if (result)
+    {
+        size_t idx  = 0;
+        char* token = strtok(a_str, delim);
+
+        while (token)
+        {
+            assert(idx < count);
+            *(result + idx++) = strdup(token);
+            token = strtok(0, delim);
+        }
+        assert(idx == count - 1);
+        *(result + idx) = 0;
+    }
+
+    return result;
 }
 
 /** Verifies if the configuration is complete and valid.  Terminates the program if it isn't */
