@@ -202,6 +202,8 @@ t_firewall_rule *get_ruleset(const char *);
 
 void parse_trusted_mac_list(const char *);
 
+void parse_trusted_host_list(const char *);
+
 #define LOCK_CONFIG() do { \
 	debug(LOG_DEBUG, "Locking config"); \
 	pthread_mutex_lock(&config_mutex); \
