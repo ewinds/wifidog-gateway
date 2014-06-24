@@ -35,6 +35,7 @@
 
 #include <string.h>
 #include <ctype.h>
+#include <assert.h>
 
 #include "common.h"
 #include "safe.h"
