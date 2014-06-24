@@ -94,6 +94,7 @@ typedef enum {
 	oFirewallRule,
 	oFirewallRuleSet,
 	oTrustedMACList,
+	oTrustedHostList,
         oHtmlMessageFile,
 	oProxyPort,
 } OpCodes;
@@ -134,6 +135,7 @@ static const struct {
 	{ "firewallruleset",		oFirewallRuleSet },
 	{ "firewallrule",		oFirewallRule },
 	{ "trustedmaclist",		oTrustedMACList },
+	{ "trustedhostlist",		oTrustedHostList },
         { "htmlmessagefile",		oHtmlMessageFile },
 	{ "proxyport",			oProxyPort },
 	{ NULL,				oBadOption },
@@ -184,6 +186,7 @@ config_init(void)
 	config.internal_sock = safe_strdup(DEFAULT_INTERNAL_SOCK);
 	config.rulesets = NULL;
 	config.trustedmaclist = NULL;
+	config.trustedhostlist = NULL;
 	config.proxy_port = 0;
 }
 
@@ -712,6 +715,9 @@ config_read(const char *filename)
 				case oTrustedMACList:
 					parse_trusted_mac_list(p1);
 					break;
+				case oTrustedHostList:
+					parse_trusted_host_list(p1);
+					break;
 				case oHTTPDName:
 					config.httpdname = safe_strdup(p1);
 					break;
@@ -828,6 +834,48 @@ void parse_trusted_mac_list(const char *ptr) {
 	free(ptrcopy);
 
 	free(mac);
+
+}
+
+void parse_trusted_host_list(const char *ptr) {
+	char *ptrcopy = NULL;
+	char *possiblehost = NULL;
+	char *host = NULL;
+	t_trusted_host *p = NULL;
+
+	debug(LOG_DEBUG, "Parsing string [%s] for trusted host addresses", ptr);
+
+	host = safe_malloc(18);
+
+	/* strsep modifies original, so let's make a copy */
+	ptrcopy = safe_strdup(ptr);
+
+	while ((possiblehost = strsep(&ptrcopy, ", "))) {
+		if (sscanf(possiblehost, " %[a-f0-9.]", host) == 1) {
+			/* Copy host to the list */
+
+			debug(LOG_DEBUG, "Adding host address [%s] to trusted list", host);
+
+			if (config.trustedhostlist == NULL) {
+				config.trustedhostlist = safe_malloc(sizeof(t_trusted_host));
+				config.trustedhostlist->host = safe_strdup(host);
+				config.trustedhostlist->next = NULL;
+			}
+			else {
+				/* Advance to the last entry */
+				for (p = config.trustedhostlist; p->next != NULL; p = p->next);
+				p->next = safe_malloc(sizeof(t_trusted_host));
+				p = p->next;
+				p->host = safe_strdup(host);
+				p->next = NULL;
+			}
+
+		}
+	}
+
+	free(ptrcopy);
+
+	free(host);
 
 }
 

@@ -276,6 +276,9 @@ iptables_fw_init(void)
 	for (p = config->trustedmaclist; p != NULL; p = p->next)
 		iptables_do_command("-t mangle -A " TABLE_WIFIDOG_TRUSTED " -m mac --mac-source %s -j MARK --set-mark %d", p->mac, FW_MARK_KNOWN);
 
+	for (p = config->trustedhostlist; p != NULL; p = p->next)
+		iptables_do_command("-t mangle -A " TABLE_WIFIDOG_TRUSTED " -p tcp --src %s -j MARK --set-mark %d", p->host, FW_MARK_KNOWN);
+
 	/*
 	 *
 	 * Everything in the NAT table

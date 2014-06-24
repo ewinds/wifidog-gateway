@@ -129,6 +129,14 @@ typedef struct _trusted_mac_t {
 } t_trusted_mac;
 
 /**
+ * Trusted WAN Hosts
+ */
+typedef struct _trusted_host_t {
+    char   *host;
+    struct _trusted_host_t *next;
+} t_trusted_host;
+
+/**
  * Configuration structure
  */
 typedef struct {
@@ -165,6 +173,7 @@ typedef struct {
     int proxy_port;		/**< @brief Transparent proxy port (0 to disable) */
     t_firewall_ruleset	*rulesets;	/**< @brief firewall rules */
     t_trusted_mac *trustedmaclist; /**< @brief list of trusted macs */
+    t_trusted_host *trustedhostlist; /**< @brief list of trusted hosts */
 } s_config;
 
 /** @brief Get the current gateway configuration */
