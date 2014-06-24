@@ -240,6 +240,7 @@ iptables_fw_init(void)
 	char * ext_interface = NULL;
 	int gw_port = 0;
 	t_trusted_mac *p;
+	t_trusted_host *q;
 	int proxy_port;
 	fw_quiet = 0;
 
@@ -276,8 +277,8 @@ iptables_fw_init(void)
 	for (p = config->trustedmaclist; p != NULL; p = p->next)
 		iptables_do_command("-t mangle -A " TABLE_WIFIDOG_TRUSTED " -m mac --mac-source %s -j MARK --set-mark %d", p->mac, FW_MARK_KNOWN);
 
-	for (p = config->trustedhostlist; p != NULL; p = p->next)
-		iptables_do_command("-t mangle -A " TABLE_WIFIDOG_TRUSTED " -p tcp --src %s -j MARK --set-mark %d", p->host, FW_MARK_KNOWN);
+	for (q = config->trustedhostlist; q != NULL; q = q->next)
+		iptables_do_command("-t mangle -A " TABLE_WIFIDOG_TRUSTED " -p tcp --src %s -j MARK --set-mark %d", q->host, FW_MARK_KNOWN);
 
 	/*
 	 *
