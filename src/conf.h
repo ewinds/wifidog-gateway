@@ -41,7 +41,7 @@
 	#define DEFAULT_CONFIGFILE "/tmp/etc/wifidog.conf"
 	#define DEFAULT_HTMLMSGFILE "/etc/wifidog-msg.html"
 #else
-	#define DEFAULT_CONFIGFILE SYSCONFDIR"/wifidog.conf"
+	#define DEFAULT_CONFIGFILE "/tmp/etc/wifidog.conf"
 	#define DEFAULT_HTMLMSGFILE SYSCONFDIR"/wifidog-msg.html"
 #endif	
 #define DEFAULT_DAEMON 1
