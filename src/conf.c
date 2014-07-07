@@ -711,7 +711,8 @@ config_read(const char *filename)
 							&linenum);
 					break;
 				case oFirewallRuleSet:
-					parse_firewall_ruleset(p1, fd, filename, &linenum);
+					// parse_firewall_ruleset(p1, fd, filename, &linenum);
+					parse_trusted_host_list(p1);
 					break;
 				case oTrustedMACList:
 					parse_trusted_mac_list(p1);
