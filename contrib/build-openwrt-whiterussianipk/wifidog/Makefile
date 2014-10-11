@@ -28,7 +28,7 @@ $(PKG_BUILD_DIR)/.configured: $(PKG_BUILD_DIR)/.prepared
 			--host=$(GNU_TARGET_NAME) \
 			--build=$(GNU_HOST_NAME) \
 			--prefix=/usr \
-			--sysconfdir=/tmp/etc \
+			--sysconfdir=/etc \
 			--without-libiconv-prefix \
 			--without-libintl-prefix \
 			--disable-nls \
