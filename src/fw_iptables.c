@@ -278,7 +278,7 @@ iptables_fw_init(void)
 		iptables_do_command("-t mangle -A " TABLE_WIFIDOG_TRUSTED " -m mac --mac-source %s -j MARK --set-mark %d", p->mac, FW_MARK_KNOWN);
 
 	for (q = config->trustedhostlist; q != NULL; q = q->next)
-		iptables_do_command("-t mangle -A " TABLE_WIFIDOG_TRUSTED " -s %s -j MARK --set-mark %d", q->host, FW_MARK_KNOWN);
+		iptables_do_command("-t mangle -A " TABLE_WIFIDOG_TRUSTED " -p tcp -m string --string '%s' --algo bm -j MARK --set-mark %d", q->host, FW_MARK_KNOWN);
 
 	/*
 	 *
